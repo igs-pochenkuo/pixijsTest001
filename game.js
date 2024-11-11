@@ -83,7 +83,7 @@ for (let i = 0; i < REEL_CONFIG.count; i++) {
         
         symbol.width = SYMBOL_CONFIG.width;
         symbol.height = SYMBOL_CONFIG.height;
-        symbol.y = j * SYMBOL_CONFIG.height;
+        symbol.y = (j - 1) * SYMBOL_CONFIG.height;
         symbol.anchor.set(0.5);
         symbol.x = SYMBOL_CONFIG.width / 2;
         symbol.symbolIndex = symbolIndex;
@@ -102,6 +102,7 @@ function generateNewSymbol(reelIndex) {
     symbol.anchor.set(0.5);
     symbol.x = SYMBOL_CONFIG.width / 2;
     symbol.symbolIndex = symbolIndex;
+    symbol.y = -SYMBOL_CONFIG.height;
     
     return symbol;
 }
@@ -116,23 +117,22 @@ function checkWin(reels) {
         symbolsMatrix[row] = [];
         for (let reel = 0; reel < REEL_CONFIG.count; reel++) {
             const symbols = reels[reel].children;
+            const sortedSymbols = [...symbols].sort((a, b) => a.y - b.y);
             
-            let targetSymbol = null;
-            for (let symbol of symbols) {
-                const relativeY = symbol.y % (SYMBOL_CONFIG.height * REEL_CONFIG.symbolsPerReel);
-                const adjustedY = relativeY >= 0 ? relativeY : relativeY + (SYMBOL_CONFIG.height * REEL_CONFIG.symbolsPerReel);
-                
-                if (adjustedY >= row * SYMBOL_CONFIG.height && 
-                    adjustedY < (row + 1) * SYMBOL_CONFIG.height) {
-                    targetSymbol = symbol;
-                    break;
-                }
-            }
-
+            // 找出視窗中的符號
+            const visibleSymbols = sortedSymbols.filter(symbol => {
+                const normalizedY = symbol.y % (SYMBOL_CONFIG.height * REEL_CONFIG.symbolsPerReel);
+                return normalizedY >= 0 && normalizedY < SYMBOL_CONFIG.height * 3;
+            });
+            
+            // 根據位置取得對應行的符號
+            const targetSymbol = visibleSymbols[row];
+            
             if (targetSymbol) {
                 const symbolName = `symbol_${String(targetSymbol.symbolIndex + 1).padStart(2, '0')}`;
                 symbolsMatrix[row][reel] = symbolName;
             } else {
+                // 如果找不到符號，使用預設值
                 const defaultIndex = Math.floor(Math.random() * RESOURCE_CONFIG.symbols.length);
                 symbolsMatrix[row][reel] = `symbol_${String(defaultIndex + 1).padStart(2, '0')}`;
             }
@@ -237,39 +237,62 @@ bottomBar.onSpin(() => {
         const targetY = symbols.length * SYMBOL_CONFIG.height;
         
         let currentSpeed = 0;
+        let totalDistance = 0;  // 追蹤總移動距離
+        const minSpinDistance = SYMBOL_CONFIG.height * 8;  // 最小轉動距離
+        
         const spinAnimation = (delta) => {
-            currentSpeed = Math.min(50, currentSpeed + 1);
+            // 加速階段
+            if (totalDistance < minSpinDistance) {
+                currentSpeed = Math.min(50, currentSpeed + 1);
+            } 
+            // 減速階段
+            else if (currentSpeed > 0) {
+                currentSpeed = Math.max(0, currentSpeed - 0.5);
+            }
             
+            // 移動符號
             symbols.forEach(symbol => {
                 symbol.y += currentSpeed;
+                totalDistance += currentSpeed;
+                
+                // 當符號超出範圍時
                 if (symbol.y >= targetY) {
                     reel.removeChild(symbol);
                     const newSymbol = generateNewSymbol(i);
-                    newSymbol.y = -SYMBOL_CONFIG.height;
+                    newSymbol.y = symbol.y - targetY;  // 確保連續性
                     reel.addChild(newSymbol);
                 }
             });
 
-            if (currentSpeed >= 50) {
-                setTimeout(() => {
-                    app.ticker.remove(spinAnimation);
-                    if (i === reels.length - 1 && !spinCompleted) {
-                        spinCompleted = true;
-                        gameState.spinning = false;
-                        
-                        const winAmount = checkWin(reels);
-                        gameState.lastWin = winAmount;
-                        gameState.totalCredit += winAmount;
-                        
-                        console.log(`更新後金額: ${gameState.totalCredit}`);
-                        console.log('=== 本輪結束 ===\n');
-                        
-                        bottomBar.updateUI();
-                    }
-                }, 1000 + i * 500);
+            // 停止條件：速度為0且移動距離足夠
+            if (currentSpeed === 0 && totalDistance >= minSpinDistance) {
+                // 調整最終位置
+                const offset = SYMBOL_CONFIG.height - 
+                    (symbols[0].y % SYMBOL_CONFIG.height);
+                
+                symbols.forEach(symbol => {
+                    symbol.y += offset;
+                });
+                
+                app.ticker.remove(spinAnimation);
+                
+                if (i === reels.length - 1 && !spinCompleted) {
+                    spinCompleted = true;
+                    gameState.spinning = false;
+                    
+                    const winAmount = checkWin(reels);
+                    gameState.lastWin = winAmount;
+                    gameState.totalCredit += winAmount;
+                    
+                    console.log(`更新後金額: ${gameState.totalCredit}`);
+                    console.log('=== 本輪結束 ===\n');
+                    
+                    bottomBar.updateUI();
+                }
             }
         };
 
+        // 依序啟動每個輪軸的動畫
         setTimeout(() => {
             app.ticker.add(spinAnimation);
         }, i * 200);
