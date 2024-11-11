@@ -2,7 +2,6 @@ export const SYMBOL_CONFIG = {
     width: 180,      
     height: 150,     
     spacing: 10,
-    // 新增倍率設定
     payouts: {
         'symbol_01': { name: 'SCATTER', multiplier: 100, isScatter: true }, 
         'symbol_02': { name: 'WILD', multiplier: 0, isWild: true },        
@@ -23,55 +22,54 @@ export const SYMBOL_CONFIG = {
 export const REEL_CONFIG = {
     count: 3,        
     width: SYMBOL_CONFIG.width + SYMBOL_CONFIG.spacing,  
-    symbolsPerReel: 4 
-};
-
-export const REEL_STRIPS = {
-    reel0: [
-        { symbol: 0, weight: 1 },  // SCATTER
-        { symbol: 1, weight: 2 },  // WILD
-        { symbol: 2, weight: 1 },  // FREE SPIN
-        { symbol: 3, weight: 4 },  // BOXER1
-        { symbol: 4, weight: 4 },  // BOXER2
-        { symbol: 5, weight: 5 },  // GLOVE
-        { symbol: 6, weight: 6 },  // FIST
-        { symbol: 7, weight: 7 },  // DUMBBELL_RED
-        { symbol: 8, weight: 7 },  // DUMBBELL_BLUE
-        { symbol: 9, weight: 8 },  // A
-        { symbol: 10, weight: 8 }, // K
-        { symbol: 11, weight: 9 }, // Q
-        { symbol: 12, weight: 9 }  // J
-    ],
-    reel1: [
-        { symbol: 0, weight: 1 },
-        { symbol: 1, weight: 3 },
-        { symbol: 2, weight: 1 },
-        { symbol: 3, weight: 5 },
-        { symbol: 4, weight: 5 },
-        { symbol: 5, weight: 6 },
-        { symbol: 6, weight: 7 },
-        { symbol: 7, weight: 8 },
-        { symbol: 8, weight: 8 },
-        { symbol: 9, weight: 9 },
-        { symbol: 10, weight: 9 },
-        { symbol: 11, weight: 10 },
-        { symbol: 12, weight: 10 }
-    ],
-    reel2: [
-        { symbol: 0, weight: 1 },
-        { symbol: 1, weight: 2 },
-        { symbol: 2, weight: 1 },
-        { symbol: 3, weight: 3 },
-        { symbol: 4, weight: 3 },
-        { symbol: 5, weight: 4 },
-        { symbol: 6, weight: 5 },
-        { symbol: 7, weight: 6 },
-        { symbol: 8, weight: 6 },
-        { symbol: 9, weight: 7 },
-        { symbol: 10, weight: 7 },
-        { symbol: 11, weight: 8 },
-        { symbol: 12, weight: 8 }
-    ]
+    symbolsPerReel: 4,
+    strips: {
+        reel0: [
+            { symbol: 0, weight: 1 },  // SCATTER
+            { symbol: 1, weight: 2 },  // WILD
+            { symbol: 2, weight: 1 },  // FREE SPIN
+            { symbol: 3, weight: 4 },  // BOXER1
+            { symbol: 4, weight: 4 },  // BOXER2
+            { symbol: 5, weight: 5 },  // GLOVE
+            { symbol: 6, weight: 6 },  // FIST
+            { symbol: 7, weight: 7 },  // DUMBBELL_RED
+            { symbol: 8, weight: 7 },  // DUMBBELL_BLUE
+            { symbol: 9, weight: 8 },  // A
+            { symbol: 10, weight: 8 }, // K
+            { symbol: 11, weight: 9 }, // Q
+            { symbol: 12, weight: 9 }  // J
+        ],
+        reel1: [
+            { symbol: 0, weight: 1 },
+            { symbol: 1, weight: 3 },
+            { symbol: 2, weight: 1 },
+            { symbol: 3, weight: 5 },
+            { symbol: 4, weight: 5 },
+            { symbol: 5, weight: 6 },
+            { symbol: 6, weight: 7 },
+            { symbol: 7, weight: 8 },
+            { symbol: 8, weight: 8 },
+            { symbol: 9, weight: 9 },
+            { symbol: 10, weight: 9 },
+            { symbol: 11, weight: 10 },
+            { symbol: 12, weight: 10 }
+        ],
+        reel2: [
+            { symbol: 0, weight: 1 },
+            { symbol: 1, weight: 2 },
+            { symbol: 2, weight: 1 },
+            { symbol: 3, weight: 3 },
+            { symbol: 4, weight: 3 },
+            { symbol: 5, weight: 4 },
+            { symbol: 6, weight: 5 },
+            { symbol: 7, weight: 6 },
+            { symbol: 8, weight: 6 },
+            { symbol: 9, weight: 7 },
+            { symbol: 10, weight: 7 },
+            { symbol: 11, weight: 8 },
+            { symbol: 12, weight: 8 }
+        ]
+    }
 };
 
 export const PAYLINE_CONFIG = {

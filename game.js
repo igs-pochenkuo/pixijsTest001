@@ -1,300 +1,53 @@
+import { SlotMachine } from './modules/SlotMachine.js';
 import { BottomBar } from './bottomBar.js';
-import {
-    SYMBOL_CONFIG,
-    REEL_CONFIG,
-    REEL_STRIPS,
-    PAYLINE_CONFIG,
-    BET_CONFIG,
-    GAME_CONFIG,
-    RESOURCE_CONFIG
-} from './config.js';
+import { eventManager } from './modules/EventManager.js';
+import * as CONFIG from './config.js';
 
-// 新增權重隨機選擇函數
-function getWeightedRandomSymbol(reelStrip) {
-    const totalWeight = reelStrip.reduce((sum, item) => sum + item.weight, 0);
-    let random = Math.random() * totalWeight;
-    
-    for (const item of reelStrip) {
-        random -= item.weight;
-        if (random <= 0) {
-            return item.symbol;
-        }
+class Game {
+    constructor() {
+        this.app = null;
+        this.slotMachine = null;
+        this.bottomBar = null;
+        this.init();
     }
-    return reelStrip[0].symbol;
-}
 
-// 建立 PIXI Application
-const app = new PIXI.Application();
-await app.init({ 
-    width: GAME_CONFIG.width, 
-    height: GAME_CONFIG.height,
-    backgroundColor: GAME_CONFIG.backgroundColor 
-});
-document.getElementById('gameContainer').appendChild(app.canvas);
-
-// 載入所有遊戲資源
-await PIXI.Assets.load([RESOURCE_CONFIG.background, ...RESOURCE_CONFIG.symbols]);
-
-// 建立遊戲背景
-const background = PIXI.Sprite.from(RESOURCE_CONFIG.background);
-background.width = app.screen.width;
-background.height = app.screen.height;
-app.stage.addChild(background);
-
-// 遊戲狀態管理
-const gameState = {
-    spinning: false,
-    betIndex: BET_CONFIG.defaultIndex,
-    currentBet: BET_CONFIG.levels[BET_CONFIG.defaultIndex],
-    totalCredit: GAME_CONFIG.defaultCredit,
-    lastWin: 0
-};
-
-// 建立老虎機捲軸容器
-const reelsContainer = new PIXI.Container();
-reelsContainer.position.set(GAME_CONFIG.reelsPosition.x, GAME_CONFIG.reelsPosition.y);
-app.stage.addChild(reelsContainer);
-
-// 建立遮罩
-const reelsMask = new PIXI.Graphics();
-reelsMask.beginFill(0xFFFFFF);
-reelsMask.drawRect(
-    0, 
-    0, 
-    (REEL_CONFIG.width) * REEL_CONFIG.count - SYMBOL_CONFIG.spacing, 
-    SYMBOL_CONFIG.height * 3
-);
-reelsMask.endFill();
-reelsContainer.mask = reelsMask;
-reelsContainer.addChild(reelsMask);
-
-// 建立捲軸
-const reels = [];
-for (let i = 0; i < REEL_CONFIG.count; i++) {
-    const reel = new PIXI.Container();
-    reel.x = i * REEL_CONFIG.width;
-    reelsContainer.addChild(reel);
-    reels.push(reel);
-
-    // 為每個捲軸新增圖示
-    for (let j = 0; j < REEL_CONFIG.symbolsPerReel; j++) {
-        const symbolIndex = getWeightedRandomSymbol(REEL_STRIPS[`reel${i}`]);
-        const symbol = PIXI.Sprite.from(RESOURCE_CONFIG.symbols[symbolIndex]);
-        
-        symbol.width = SYMBOL_CONFIG.width;
-        symbol.height = SYMBOL_CONFIG.height;
-        symbol.y = (j - 1) * SYMBOL_CONFIG.height;
-        symbol.anchor.set(0.5);
-        symbol.x = SYMBOL_CONFIG.width / 2;
-        symbol.symbolIndex = symbolIndex;
-        
-        reel.addChild(symbol);
-    }
-}
-
-// 生成新符號的函數
-function generateNewSymbol(reelIndex) {
-    const symbolIndex = getWeightedRandomSymbol(REEL_STRIPS[`reel${reelIndex}`]);
-    const symbol = PIXI.Sprite.from(RESOURCE_CONFIG.symbols[symbolIndex]);
-    
-    symbol.width = SYMBOL_CONFIG.width;
-    symbol.height = SYMBOL_CONFIG.height;
-    symbol.anchor.set(0.5);
-    symbol.x = SYMBOL_CONFIG.width / 2;
-    symbol.symbolIndex = symbolIndex;
-    symbol.y = -SYMBOL_CONFIG.height;
-    
-    return symbol;
-}
-
-// 檢查中獎函數
-function checkWin(reels) {
-    let totalWin = 0;
-    const symbolsMatrix = [];
-    
-    // 建立符號矩陣
-    for (let row = 0; row < 3; row++) {
-        symbolsMatrix[row] = [];
-        for (let reel = 0; reel < REEL_CONFIG.count; reel++) {
-            const symbols = reels[reel].children;
-            const sortedSymbols = [...symbols].sort((a, b) => a.y - b.y);
-            
-            // 找出視窗中的符號
-            const visibleSymbols = sortedSymbols.filter(symbol => {
-                const normalizedY = symbol.y % (SYMBOL_CONFIG.height * REEL_CONFIG.symbolsPerReel);
-                return normalizedY >= 0 && normalizedY < SYMBOL_CONFIG.height * 3;
+    async init() {
+        try {
+            // 初始化 PIXI Application
+            this.app = new PIXI.Application();
+            await this.app.init({ 
+                width: CONFIG.GAME_CONFIG.width, 
+                height: CONFIG.GAME_CONFIG.height,
+                backgroundColor: CONFIG.GAME_CONFIG.backgroundColor 
             });
-            
-            // 根據位置取得對應行的符號
-            const targetSymbol = visibleSymbols[row];
-            
-            if (targetSymbol) {
-                const symbolName = `symbol_${String(targetSymbol.symbolIndex + 1).padStart(2, '0')}`;
-                symbolsMatrix[row][reel] = symbolName;
-            } else {
-                // 如果找不到符號，使用預設值
-                const defaultIndex = Math.floor(Math.random() * RESOURCE_CONFIG.symbols.length);
-                symbolsMatrix[row][reel] = `symbol_${String(defaultIndex + 1).padStart(2, '0')}`;
-            }
-        }
-    }
+            document.getElementById('gameContainer').appendChild(this.app.canvas);
 
-    console.log('當前盤面:');
-    symbolsMatrix.forEach((row, i) => {
-        console.log(`Row ${i}: ${row.map(symbol => SYMBOL_CONFIG.payouts[symbol].name).join(' | ')}`);
-    });
+            // 載入資源
+            await PIXI.Assets.load([CONFIG.RESOURCE_CONFIG.background, ...CONFIG.RESOURCE_CONFIG.symbols]);
 
-    // 檢查每條中獎線
-    PAYLINE_CONFIG.lines.forEach((line, index) => {
-        const symbolsInLine = line.map((row, col) => symbolsMatrix[row][col]);
-        
-        let effectiveSymbol = null;
-        let allWild = true;
-        
-        for (const symbol of symbolsInLine) {
-            if (symbol !== 'symbol_02') {
-                effectiveSymbol = symbol;
-                allWild = false;
-                break;
-            }
-        }
-        
-        if (allWild) {
-            effectiveSymbol = 'symbol_02';
-        }
-        
-        if (effectiveSymbol === 'symbol_01' || effectiveSymbol === 'symbol_03') {
-            return;
-        }
-        
-        const isWin = symbolsInLine.every(symbol => 
-            symbol === effectiveSymbol || symbol === 'symbol_02'
-        );
+            // 建立老虎機，傳入 app 實例
+            this.slotMachine = new SlotMachine(CONFIG, this.app);
+            await this.slotMachine.init();
+            this.app.stage.addChild(this.slotMachine);
 
-        if (isWin) {
-            const win = SYMBOL_CONFIG.payouts[effectiveSymbol].multiplier * gameState.currentBet;
-            totalWin += win;
-            
-            console.log(`中獎線 ${index + 1}: ${SYMBOL_CONFIG.payouts[effectiveSymbol].name} x${SYMBOL_CONFIG.payouts[effectiveSymbol].multiplier} = ${win}`);
-            
-            highlightWinningLine(index, line, win);
-        }
-    });
+            // 建立底部控制列
+            this.bottomBar = new BottomBar(this.app, this.slotMachine.gameState, CONFIG.BET_CONFIG);
 
-    // 檢查 SCATTER
-    const scatterCount = symbolsMatrix.flat().filter(symbol => symbol === 'symbol_01').length;
-    if (scatterCount >= 3) {
-        const scatterWin = SYMBOL_CONFIG.payouts['symbol_01'].multiplier * gameState.currentBet;
-        totalWin += scatterWin;
-        console.log(`SCATTER 獎勵: ${scatterCount}個 = ${scatterWin}`);
-    }
-
-    console.log(`總贏分: ${totalWin}`);
-    return totalWin;
-}
-
-// 顯示中獎線動畫
-function highlightWinningLine(lineIndex, line, winAmount) {
-    const winLine = new PIXI.Graphics();
-    winLine.lineStyle(3, 0xFFFF00, 1);
-    
-    const startX = 0;
-    const startY = (line[0] + 0.5) * SYMBOL_CONFIG.height;
-    winLine.moveTo(startX, startY);
-    
-    line.forEach((row, col) => {
-        const x = col * REEL_CONFIG.width;
-        const y = (row + 0.5) * SYMBOL_CONFIG.height;
-        winLine.lineTo(x, y);
-    });
-    
-    reelsContainer.addChild(winLine);
-    
-    setTimeout(() => {
-        reelsContainer.removeChild(winLine);
-    }, 2000);
-}
-
-// 建立 BottomBar
-const bottomBar = new BottomBar(app, gameState, BET_CONFIG);
-
-// 設置 SPIN 按鈕事件
-bottomBar.onSpin(() => {
-    if (gameState.spinning) return;
-    
-    console.log('=== 開始新一輪 ===');
-    console.log(`當前押注: ${gameState.currentBet}`);
-    console.log(`剩餘金額: ${gameState.totalCredit}`);
-    
-    gameState.spinning = true;
-    gameState.totalCredit -= gameState.currentBet;
-    bottomBar.updateUI();
-    
-    let spinCompleted = false;
-    
-    reels.forEach((reel, i) => {
-        const symbols = reel.children;
-        const targetY = symbols.length * SYMBOL_CONFIG.height;
-        
-        let currentSpeed = 0;
-        let totalDistance = 0;  // 追蹤總移動距離
-        const minSpinDistance = SYMBOL_CONFIG.height * 8;  // 最小轉動距離
-        
-        const spinAnimation = (delta) => {
-            // 加速階段
-            if (totalDistance < minSpinDistance) {
-                currentSpeed = Math.min(50, currentSpeed + 1);
-            } 
-            // 減速階段
-            else if (currentSpeed > 0) {
-                currentSpeed = Math.max(0, currentSpeed - 0.5);
-            }
-            
-            // 移動符號
-            symbols.forEach(symbol => {
-                symbol.y += currentSpeed;
-                totalDistance += currentSpeed;
-                
-                // 當符號超出範圍時
-                if (symbol.y >= targetY) {
-                    reel.removeChild(symbol);
-                    const newSymbol = generateNewSymbol(i);
-                    newSymbol.y = symbol.y - targetY;  // 確保連續性
-                    reel.addChild(newSymbol);
-                }
+            // 設置 spin 按鈕事件
+            this.bottomBar.onSpin(() => {
+                this.slotMachine.spin();
             });
 
-            // 停止條件：速度為0且移動距離足夠
-            if (currentSpeed === 0 && totalDistance >= minSpinDistance) {
-                // 調整最終位置
-                const offset = SYMBOL_CONFIG.height - 
-                    (symbols[0].y % SYMBOL_CONFIG.height);
-                
-                symbols.forEach(symbol => {
-                    symbol.y += offset;
-                });
-                
-                app.ticker.remove(spinAnimation);
-                
-                if (i === reels.length - 1 && !spinCompleted) {
-                    spinCompleted = true;
-                    gameState.spinning = false;
-                    
-                    const winAmount = checkWin(reels);
-                    gameState.lastWin = winAmount;
-                    gameState.totalCredit += winAmount;
-                    
-                    console.log(`更新後金額: ${gameState.totalCredit}`);
-                    console.log('=== 本輪結束 ===\n');
-                    
-                    bottomBar.updateUI();
-                }
-            }
-        };
+            eventManager.emit('game:ready');
 
-        // 依序啟動每個輪軸的動畫
-        setTimeout(() => {
-            app.ticker.add(spinAnimation);
-        }, i * 200);
-    });
+        } catch (error) {
+            console.error('Game initialization failed:', error);
+            eventManager.emit('game:error', error);
+        }
+    }
+}
+
+// 啟動遊戲
+window.addEventListener('load', () => {
+    new Game();
 });
