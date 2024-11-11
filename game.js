@@ -377,7 +377,48 @@ function createUI() {
         gameState.totalCredit -= gameState.currentBet;
         updateUI();
         
-        // ... spin 動畫相關程式碼 ...
+        // 為每個捲軸設定動畫
+        reels.forEach((reel, i) => {
+            const symbols = reel.children;
+            const targetY = symbols.length * SYMBOL_CONFIG.height;
+            
+            // 使用 PIXI 的 Ticker 來處理動畫
+            let currentSpeed = 0;
+            const spinAnimation = (delta) => {
+                currentSpeed = Math.min(50, currentSpeed + 1);
+                
+                symbols.forEach(symbol => {
+                    symbol.y += currentSpeed;
+                    if (symbol.y >= targetY) {
+                        symbol.y = -SYMBOL_CONFIG.height;
+                    }
+                });
+
+                // 停止動畫
+                if (currentSpeed >= 50) {
+                    setTimeout(() => {
+                        app.ticker.remove(spinAnimation);
+                        if (i === reels.length - 1) {
+                            // 最後一個輪軸停止時
+                            gameState.spinning = false;
+                            
+                            // 檢查中獎
+                            const winAmount = checkWin(reels);
+                            gameState.lastWin = winAmount;
+                            gameState.totalCredit += winAmount;
+                            
+                            // 更新UI顯示
+                            updateUI();
+                        }
+                    }, 1000 + i * 500);
+                }
+            };
+
+            // 依序啟動每個輪軸的動畫
+            setTimeout(() => {
+                app.ticker.add(spinAnimation);
+            }, i * 200);
+        });
     });
 }
 
