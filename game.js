@@ -11,14 +11,19 @@ document.getElementById('gameContainer').appendChild(app.canvas);
 const resources = {
     background: 'Resource/image/MG_BG.jpg',
     symbols: [
-        'Resource/image/symbol/symbol_01.png',
-        'Resource/image/symbol/symbol_02.png',
-        'Resource/image/symbol/symbol_03.png',
-        'Resource/image/symbol/symbol_04.png',
-        'Resource/image/symbol/symbol_05.png',
-        'Resource/image/symbol/symbol_06.png',
-        'Resource/image/symbol/symbol_07.png',
-        'Resource/image/symbol/symbol_08.png'
+        'Resource/image/symbol/symbol_01.png', // SCATTER
+        'Resource/image/symbol/symbol_02.png', // WILD
+        'Resource/image/symbol/symbol_03.png', // FREE SPIN
+        'Resource/image/symbol/symbol_04.png', // 拳擊手 1
+        'Resource/image/symbol/symbol_05.png', // 拳擊手 2
+        'Resource/image/symbol/symbol_06.png', // 拳擊手套
+        'Resource/image/symbol/symbol_07.png', // 拳頭
+        'Resource/image/symbol/symbol_08.png', // 啞鈴紅
+        'Resource/image/symbol/symbol_09.png', // 啞鈴藍
+        'Resource/image/symbol/symbol_10.png', // A
+        'Resource/image/symbol/symbol_11.png', // K
+        'Resource/image/symbol/symbol_12.png', // Q
+        'Resource/image/symbol/symbol_13.png'  // J
     ]
 };
 
@@ -38,14 +43,19 @@ const SYMBOL_CONFIG = {
     spacing: 10,
     // 新增倍率設定
     payouts: {
-        'symbol_01': { name: 'WILD', multiplier: 100 },    // 百搭符號
-        'symbol_02': { name: 'SEVEN', multiplier: 50 },    // 七號
-        'symbol_03': { name: 'BAR3', multiplier: 30 },     // 三條 BAR
-        'symbol_04': { name: 'BAR2', multiplier: 20 },     // 雙條 BAR
-        'symbol_05': { name: 'BAR1', multiplier: 10 },     // 單條 BAR
-        'symbol_06': { name: 'BELL', multiplier: 8 },      // 鈴鐺
-        'symbol_07': { name: 'CHERRY', multiplier: 5 },    // 櫻桃
-        'symbol_08': { name: 'ORANGE', multiplier: 3 }     // 橘子
+        'symbol_01': { name: 'SCATTER', multiplier: 100, isScatter: true }, // 特殊符號，觸發額外獎勵
+        'symbol_02': { name: 'WILD', multiplier: 0, isWild: true },        // 百搭符號
+        'symbol_03': { name: 'FREE SPIN', multiplier: 50, isSpecial: true },// 觸發免費遊戲
+        'symbol_04': { name: 'BOXER1', multiplier: 40 },     // 高額符號
+        'symbol_05': { name: 'BOXER2', multiplier: 35 },     // 高額符號
+        'symbol_06': { name: 'GLOVE', multiplier: 30 },      // 高額符號
+        'symbol_07': { name: 'FIST', multiplier: 25 },       // 中額符號
+        'symbol_08': { name: 'DUMBBELL_RED', multiplier: 20 },// 中額符號
+        'symbol_09': { name: 'DUMBBELL_BLUE', multiplier: 15 },// 中額符號
+        'symbol_10': { name: 'A', multiplier: 10 },          // 低額符號
+        'symbol_11': { name: 'K', multiplier: 8 },           // 低額符號
+        'symbol_12': { name: 'Q', multiplier: 5 },           // 低額符號
+        'symbol_13': { name: 'J', multiplier: 3 }            // 低額符號
     }
 };
 
@@ -97,6 +107,9 @@ for (let i = 0; i < REEL_CONFIG.count; i++) {
         symbol.anchor.set(0.5);
         symbol.x = SYMBOL_CONFIG.width / 2;
         
+        // 儲存 symbol 的索引，用於後續中獎判定
+        symbol.symbolIndex = symbolIndex;
+        
         reel.addChild(symbol);
     }
 }
@@ -112,15 +125,19 @@ const PAYLINE_CONFIG = {
     ]
 };
 
-// 新增遊戲狀態管理
+// 新增 BET 級距設定
+const BET_CONFIG = {
+    levels: [1, 5, 10, 20, 50, 100, 200, 500, 1000], // BET 可選擇的級距
+    defaultIndex: 2  // 預設使用的級距索引（這裡預設為 10）
+};
+
+// 修改遊戲狀態管理
 const gameState = {
     spinning: false,
-    currentBet: 10,  // 預設押注金額
+    betIndex: BET_CONFIG.defaultIndex,  // 當前 BET 級距的索引
+    currentBet: BET_CONFIG.levels[BET_CONFIG.defaultIndex], // 預設押注金額
     totalCredit: 1000, // 預設玩家金額
-    lastWin: 0,
-    minBet: 1,      // 最小押注
-    maxBet: 100,    // 最大押注
-    betStep: 1      // 押注增減單位
+    lastWin: 0
 };
 
 // 檢查中獎函數
@@ -132,8 +149,9 @@ function checkWin(reelSymbols) {
     for (let row = 0; row < 3; row++) {
         symbolsMatrix[row] = [];
         for (let reel = 0; reel < REEL_CONFIG.count; reel++) {
-            const symbolIndex = Math.floor(reelSymbols[reel][row] / SYMBOL_CONFIG.height);
-            const symbolName = resources.symbols[symbolIndex].split('/').pop().split('.')[0];
+            // 修改這裡的邏輯，直接使用 symbol index
+            const symbolIndex = Math.floor(Math.random() * resources.symbols.length); // 暫時使用隨機數
+            const symbolName = `symbol_${String(symbolIndex + 1).padStart(2, '0')}`;
             symbolsMatrix[row][reel] = symbolName;
         }
     }
@@ -143,26 +161,42 @@ function checkWin(reelSymbols) {
         const symbolsInLine = line.map((row, col) => symbolsMatrix[row][col]);
         const firstSymbol = symbolsInLine[0];
         
+        // 跳過 SCATTER 和 FREE SPIN，這些需要特別處理
+        if (firstSymbol === 'symbol_01' || firstSymbol === 'symbol_03') return;
+        
         // 檢查是否所有符號相同或是 WILD
         const isWin = symbolsInLine.every(symbol => 
             symbol === firstSymbol || 
-            symbol === 'symbol_01' || // WILD
-            firstSymbol === 'symbol_01'
+            symbol === 'symbol_02' || // WILD
+            firstSymbol === 'symbol_02'
         );
 
         if (isWin) {
             // 取得實際中獎的符號（如果有WILD，則使用非WILD的符號計算倍率）
-            const winningSymbol = firstSymbol === 'symbol_01' ? 
-                symbolsInLine.find(s => s !== 'symbol_01') || 'symbol_01' : 
+            const winningSymbol = firstSymbol === 'symbol_02' ? 
+                symbolsInLine.find(s => s !== 'symbol_02') || 'symbol_02' : 
                 firstSymbol;
                 
             const win = SYMBOL_CONFIG.payouts[winningSymbol].multiplier * gameState.currentBet;
             totalWin += win;
             
-            // 顯示中獎線動畫（這部分需要另外實作）
             highlightWinningLine(index, line, win);
         }
     });
+
+    // 檢查 SCATTER 獎勵
+    const scatterCount = symbolsMatrix.flat().filter(symbol => symbol === 'symbol_01').length;
+    if (scatterCount >= 3) {
+        const scatterWin = SYMBOL_CONFIG.payouts['symbol_01'].multiplier * gameState.currentBet;
+        totalWin += scatterWin;
+        // TODO: 觸發 SCATTER 特殊獎勵效果
+    }
+
+    // 檢查 FREE SPIN
+    const freeSpinCount = symbolsMatrix.flat().filter(symbol => symbol === 'symbol_03').length;
+    if (freeSpinCount >= 3) {
+        // TODO: 觸發免費遊戲模式
+    }
 
     return totalWin;
 }
@@ -192,20 +226,57 @@ function highlightWinningLine(lineIndex, line, winAmount) {
     }, 2000);
 }
 
-// 建立押注控制容器
-const betContainer = new PIXI.Container();
-betContainer.position.set(app.screen.width - 300, app.screen.height - 100);
-app.stage.addChild(betContainer);
+// 建立 UI 容器
+const uiContainer = new PIXI.Container();
+uiContainer.position.set(0, app.screen.height - 80); // 放在畫面底部
+app.stage.addChild(uiContainer);
 
-// 建立押注金額顯示文字
-const betText = new PIXI.Text(`BET: ${gameState.currentBet}`, {
+// 新增總額顯示 (左側)
+const creditText = new PIXI.Text(`CREDIT: ${gameState.totalCredit}`, {
     fontFamily: 'Arial',
     fontSize: 24,
     fill: 0xFFFFFF,
     align: 'center'
 });
-betText.position.set(70, 10);
-betContainer.addChild(betText);
+creditText.position.set(50, 25);
+uiContainer.addChild(creditText);
+
+// 新增最後贏分顯示 (中間)
+const winText = new PIXI.Text(`WIN: ${gameState.lastWin}`, {
+    fontFamily: 'Arial',
+    fontSize: 24,
+    fill: 0xFFFFFF,
+    align: 'center'
+});
+winText.anchor.set(0.5, 0); // 設置錨點使文字水平置中
+winText.position.set(app.screen.width / 2, 25);
+uiContainer.addChild(winText);
+
+// 修改旋轉按鈕 (右側)
+const spinButton = new PIXI.Graphics();
+spinButton.beginFill(0xFF0000);
+spinButton.drawRect(0, 0, 120, 50);
+spinButton.endFill();
+spinButton.position.set(app.screen.width - 150, 15);
+spinButton.eventMode = 'static';
+spinButton.cursor = 'pointer';
+uiContainer.addChild(spinButton);
+
+// SPIN 文字
+const spinText = new PIXI.Text('SPIN', {
+    fontFamily: 'Arial',
+    fontSize: 24,
+    fill: 0xFFFFFF,
+    align: 'center'
+});
+spinText.anchor.set(0.5);
+spinText.position.set(60, 25);
+spinButton.addChild(spinText);
+
+// 建立押注控制容器 (SPIN 左側)
+const betContainer = new PIXI.Container();
+betContainer.position.set(app.screen.width - 500, 15); // 向左移動更多空間
+uiContainer.addChild(betContainer);
 
 // 建立減少押注按鈕
 const decreaseBetButton = new PIXI.Graphics();
@@ -223,13 +294,25 @@ const minusText = new PIXI.Text('-', {
     fill: 0xFFFFFF,
     align: 'center'
 });
-minusText.position.set(20, 5);
+minusText.anchor.set(0.5);
+minusText.position.set(25, 25);
 decreaseBetButton.addChild(minusText);
+
+// 建立押注金額顯示文字
+const betText = new PIXI.Text(`BET: ${gameState.currentBet}`, {
+    fontFamily: 'Arial',
+    fontSize: 24,
+    fill: 0xFFFFFF,
+    align: 'center'
+});
+betText.position.set(70, 10);
+// 設定最小寬度確保文字不會溢出
+betContainer.addChild(betText);
 
 // 建立增加押注按鈕
 const increaseBetButton = new PIXI.Graphics();
 increaseBetButton.beginFill(0x4CAF50);
-increaseBetButton.drawRect(160, 0, 50, 50);
+increaseBetButton.drawRect(250, 0, 50, 50); // 向右移動按鈕
 increaseBetButton.endFill();
 increaseBetButton.eventMode = 'static';
 increaseBetButton.cursor = 'pointer';
@@ -242,104 +325,61 @@ const plusText = new PIXI.Text('+', {
     fill: 0xFFFFFF,
     align: 'center'
 });
-plusText.position.set(15, 5);
+plusText.anchor.set(0.5);
+plusText.position.set(275, 25);
 increaseBetButton.addChild(plusText);
-
-// 更新押注顯示
-function updateBetDisplay() {
-    betText.text = `BET: ${gameState.currentBet}`;
-}
-
-// 增加押注按鈕事件
-increaseBetButton.on('pointerdown', () => {
-    if (gameState.spinning) return;
-    if (gameState.currentBet + gameState.betStep <= gameState.maxBet) {
-        gameState.currentBet += gameState.betStep;
-        updateBetDisplay();
-    }
-});
-
-// 減少押注按鈕事件
-decreaseBetButton.on('pointerdown', () => {
-    if (gameState.spinning) return;
-    if (gameState.currentBet - gameState.betStep >= gameState.minBet) {
-        gameState.currentBet -= gameState.betStep;
-        updateBetDisplay();
-    }
-});
-
-// 新增總額顯示
-const creditText = new PIXI.Text(`CREDIT: ${gameState.totalCredit}`, {
-    fontFamily: 'Arial',
-    fontSize: 24,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-creditText.position.set(app.screen.width - 300, 50);
-app.stage.addChild(creditText);
 
 // 更新 UI 函數
 function updateUI() {
     creditText.text = `CREDIT: ${gameState.totalCredit}`;
     betText.text = `BET: ${gameState.currentBet}`;
+    winText.text = `WIN: ${gameState.lastWin}`;
 }
 
-// 新增旋轉按鈕
-const spinButton = new PIXI.Graphics();
-spinButton.beginFill(0xFF0000);
-spinButton.drawRect(0, 0, 100, 50);
-spinButton.endFill();
-spinButton.position.set(app.screen.width - 150, app.screen.height - 100);
-spinButton.eventMode = 'static';
-spinButton.cursor = 'pointer';
-app.stage.addChild(spinButton);
+// 建立 UI 相關的函數
+function createUI() {
+    // ... 其他 UI 元素的創建程式碼保持不變 ...
 
-// 修改 spin 按鈕事件
-spinButton.on('pointerdown', () => {
-    if (gameState.spinning) return;
-    if (gameState.totalCredit < gameState.currentBet) return; // 檢查金額是否足夠
-    
-    gameState.spinning = true;
-    gameState.totalCredit -= gameState.currentBet;
-    updateUI();
-    
-    reels.forEach((reel, i) => {
-        const symbols = reel.children;
-        const targetY = symbols.length * SYMBOL_CONFIG.height;
-        
-        let currentSpeed = 0;
-        const spinAnimation = (delta) => {
-            currentSpeed = Math.min(50, currentSpeed + 1);
-            
-            symbols.forEach(symbol => {
-                symbol.y += currentSpeed;
-                if (symbol.y >= targetY) {
-                    symbol.y = -SYMBOL_CONFIG.height;
-                }
-            });
-
-            if (currentSpeed >= 50) {
-                setTimeout(() => {
-                    app.ticker.remove(spinAnimation);
-                    if (i === reels.length - 1) {
-                        gameState.spinning = false;
-                        
-                        const finalSymbolPositions = reels.map(reel => 
-                            reel.children.map(symbol => symbol.y)
-                        );
-                        
-                        const winAmount = checkWin(finalSymbolPositions);
-                        gameState.lastWin = winAmount;
-                        gameState.totalCredit += winAmount;
-                        
-                        updateUI();
-                    }
-                }, 1000 + i * 500);
-            }
-        };
-
-        setTimeout(() => {
-            app.ticker.add(spinAnimation);
-        }, i * 200);
+    // 增加押注按鈕事件
+    increaseBetButton.on('pointerdown', () => {
+        if (gameState.spinning) return;
+        if (gameState.betIndex < BET_CONFIG.levels.length - 1) {
+            gameState.betIndex++;
+            gameState.currentBet = BET_CONFIG.levels[gameState.betIndex];
+            updateUI();
+        }
     });
-}); 
+
+    // 減少押注按鈕事件
+    decreaseBetButton.on('pointerdown', () => {
+        if (gameState.spinning) return;
+        if (gameState.betIndex > 0) {
+            gameState.betIndex--;
+            gameState.currentBet = BET_CONFIG.levels[gameState.betIndex];
+            updateUI();
+        }
+    });
+
+    // 移除文字的事件監聽
+    minusText.eventMode = 'none';
+    plusText.eventMode = 'none';
+
+    // 移除文字的互動性
+    minusText.interactive = false;
+    plusText.interactive = false;
+
+    // Spin 按鈕事件
+    spinButton.on('pointerdown', () => {
+        if (gameState.spinning) return;
+        if (gameState.totalCredit < gameState.currentBet) return;
+        
+        gameState.spinning = true;
+        gameState.totalCredit -= gameState.currentBet;
+        updateUI();
+        
+        // ... spin 動畫相關程式碼 ...
+    });
+}
+
+// 呼叫 createUI 函數
+createUI();
