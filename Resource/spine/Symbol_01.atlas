@@ -1,0 +1,139 @@
+
+Symbol_01.png
+size: 1315,237
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Symbol_11/FX_Circle_01
+  rotate: true
+  xy: 2, 9
+  size: 226, 225
+  orig: 256, 256
+  offset: 15, 16
+  index: -1
+Symbol_11/Symbol_11
+  rotate: true
+  xy: 400, 56
+  size: 179, 168
+  orig: 179, 168
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_BK0
+  rotate: true
+  xy: 229, 48
+  size: 187, 169
+  orig: 230, 211
+  offset: 21, 21
+  index: -1
+Symbol_11/syb_scatter_BK1
+  rotate: true
+  xy: 1118, 101
+  size: 134, 121
+  orig: 134, 121
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_BK2
+  rotate: true
+  xy: 570, 56
+  size: 179, 161
+  orig: 180, 161
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_BK2_1
+  rotate: true
+  xy: 733, 56
+  size: 179, 161
+  orig: 180, 161
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Ele01
+  rotate: true
+  xy: 896, 74
+  size: 161, 142
+  orig: 162, 142
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Ele01_1
+  rotate: true
+  xy: 1040, 74
+  size: 161, 76
+  orig: 162, 142
+  offset: 0, 34
+  index: -1
+Symbol_11/syb_scatter_Ele02
+  rotate: false
+  xy: 1223, 11
+  size: 88, 88
+  orig: 90, 91
+  offset: 1, 1
+  index: -1
+Symbol_11/syb_scatter_Old_1
+  rotate: false
+  xy: 1118, 4
+  size: 103, 95
+  orig: 103, 95
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Old_2
+  rotate: true
+  xy: 719, 3
+  size: 51, 57
+  orig: 51, 57
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Tex_1
+  rotate: false
+  xy: 550, 2
+  size: 167, 52
+  orig: 167, 52
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Tex_2
+  rotate: false
+  xy: 229, 3
+  size: 159, 43
+  orig: 159, 44
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Tex_3
+  rotate: false
+  xy: 390, 6
+  size: 158, 40
+  orig: 159, 42
+  offset: 1, 1
+  index: -1
+Symbol_11/syb_scatter_Young_1
+  rotate: false
+  xy: 815, 19
+  size: 56, 35
+  orig: 56, 35
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Young_2
+  rotate: false
+  xy: 1241, 120
+  size: 72, 115
+  orig: 72, 115
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Young_3
+  rotate: false
+  xy: 896, 7
+  size: 56, 65
+  orig: 56, 65
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Young_4
+  rotate: false
+  xy: 954, 8
+  size: 89, 64
+  orig: 89, 64
+  offset: 0, 0
+  index: -1
+Symbol_11/syb_scatter_Young_shadow
+  rotate: true
+  xy: 778, 18
+  size: 36, 35
+  orig: 36, 35
+  offset: 0, 0
+  index: -1

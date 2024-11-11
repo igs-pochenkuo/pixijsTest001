@@ -1,0 +1,419 @@
+
+SC_Boxer_Symbol_4_5.png
+size: 491,1031
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Symbol_08/Effect01
+  rotate: false
+  xy: 251, 4
+  size: 59, 78
+  orig: 64, 82
+  offset: 4, 4
+  index: -1
+Symbol_08/Effect02
+  rotate: true
+  xy: 436, 98
+  size: 31, 48
+  orig: 39, 53
+  offset: 3, 5
+  index: -1
+Symbol_08/Effect03
+  rotate: false
+  xy: 148, 84
+  size: 59, 82
+  orig: 68, 82
+  offset: 0, 0
+  index: -1
+Symbol_08/FX_CrC5
+  rotate: false
+  xy: 141, 364
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb04_Lhand01
+  rotate: true
+  xy: 164, 736
+  size: 66, 64
+  orig: 66, 64
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb04_Rhand01
+  rotate: true
+  xy: 357, 156
+  size: 46, 42
+  orig: 46, 42
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb04_Rhand02
+  rotate: false
+  xy: 92, 110
+  size: 42, 56
+  orig: 42, 56
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb04_body
+  rotate: false
+  xy: 230, 749
+  size: 160, 92
+  orig: 160, 92
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb04_headA
+  rotate: true
+  xy: 2, 182
+  size: 78, 103
+  orig: 79, 103
+  offset: 1, 0
+  index: -1
+Symbol_08/Syb04_headB
+  rotate: true
+  xy: 107, 168
+  size: 78, 103
+  orig: 79, 103
+  offset: 1, 0
+  index: -1
+Symbol_08/Syb_B_people_01
+  rotate: false
+  xy: 2, 526
+  size: 151, 90
+  orig: 151, 90
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb_B_people_LT
+  rotate: false
+  xy: 2, 618
+  size: 154, 90
+  orig: 154, 90
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb_B_people_ele01
+  rotate: true
+  xy: 212, 151
+  size: 44, 50
+  orig: 45, 51
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb_B_people_ele01_1
+  rotate: true
+  xy: 384, 85
+  size: 44, 50
+  orig: 45, 51
+  offset: 1, 0
+  index: -1
+Symbol_08/Syb_B_people_ele02
+  rotate: true
+  xy: 392, 645
+  size: 116, 96
+  orig: 120, 97
+  offset: 2, 0
+  index: -1
+Symbol_08/Syb_B_people_ele02_1
+  rotate: true
+  xy: 391, 527
+  size: 116, 96
+  orig: 120, 97
+  offset: 2, 0
+  index: -1
+Symbol_08/Syb_B_people_ele03
+  rotate: true
+  xy: 390, 441
+  size: 84, 93
+  orig: 90, 96
+  offset: 3, 0
+  index: -1
+Symbol_08/Syb_B_people_ele03_1
+  rotate: true
+  xy: 390, 356
+  size: 83, 93
+  orig: 90, 96
+  offset: 3, 0
+  index: -1
+Symbol_08/Syb_B_people_speed
+  rotate: false
+  xy: 392, 935
+  size: 97, 94
+  orig: 99, 96
+  offset: 2, 0
+  index: -1
+Symbol_08/Syb_Frame_blue01
+  rotate: false
+  xy: 2, 710
+  size: 160, 92
+  orig: 160, 92
+  offset: 0, 0
+  index: -1
+Symbol_08/Syb_Frame_blue02
+  rotate: false
+  xy: 230, 673
+  size: 160, 74
+  orig: 162, 76
+  offset: 1, 1
+  index: -1
+Symbol_09/FX_BK-glass
+  rotate: true
+  xy: 271, 317
+  size: 121, 117
+  orig: 129, 128
+  offset: 3, 8
+  index: -1
+Symbol_08/FX_BK-glass
+  rotate: true
+  xy: 271, 317
+  size: 121, 117
+  orig: 129, 128
+  offset: 3, 8
+  index: -1
+Symbol_09/FX_Circle_01
+  rotate: false
+  xy: 2, 804
+  size: 226, 225
+  orig: 256, 256
+  offset: 15, 16
+  index: -1
+Symbol_08/FX_Circle_01
+  rotate: false
+  xy: 2, 804
+  size: 226, 225
+  orig: 256, 256
+  offset: 15, 16
+  index: -1
+Symbol_09/FX_Glass_1
+  rotate: true
+  xy: 314, 601
+  size: 70, 75
+  orig: 120, 120
+  offset: 20, 25
+  index: -1
+Symbol_08/FX_Glass_1
+  rotate: true
+  xy: 314, 601
+  size: 70, 75
+  orig: 120, 120
+  offset: 20, 25
+  index: -1
+Symbol_09/FX_Glass_2
+  rotate: true
+  xy: 392, 914
+  size: 19, 97
+  orig: 120, 120
+  offset: 45, 14
+  index: -1
+Symbol_08/FX_Glass_2
+  rotate: true
+  xy: 392, 914
+  size: 19, 97
+  orig: 120, 120
+  offset: 45, 14
+  index: -1
+Symbol_09/FX_Glass_3
+  rotate: true
+  xy: 248, 274
+  size: 88, 18
+  orig: 120, 120
+  offset: 13, 53
+  index: -1
+Symbol_08/FX_Glass_3
+  rotate: true
+  xy: 248, 274
+  size: 88, 18
+  orig: 120, 120
+  offset: 13, 53
+  index: -1
+Symbol_09/FX_LightLine01
+  rotate: false
+  xy: 2, 388
+  size: 137, 136
+  orig: 180, 180
+  offset: 22, 22
+  index: -1
+Symbol_09/FX_Lineing001
+  rotate: false
+  xy: 2, 262
+  size: 128, 124
+  orig: 128, 128
+  offset: 0, 4
+  index: -1
+Symbol_09/FX_SmallSpots
+  rotate: false
+  xy: 132, 248
+  size: 114, 114
+  orig: 128, 128
+  offset: 8, 9
+  index: -1
+Symbol_08/FX_SmallSpots
+  rotate: false
+  xy: 132, 248
+  size: 114, 114
+  orig: 128, 128
+  offset: 8, 9
+  index: -1
+Symbol_09/FX_Smoke01
+  rotate: false
+  xy: 436, 64
+  size: 33, 32
+  orig: 40, 40
+  offset: 4, 5
+  index: -1
+Symbol_09/Syb03_Rhand01
+  rotate: false
+  xy: 212, 197
+  size: 54, 49
+  orig: 54, 49
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb03_Rhand02
+  rotate: false
+  xy: 271, 448
+  size: 34, 44
+  orig: 34, 44
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_00
+  rotate: false
+  xy: 209, 84
+  size: 86, 65
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_01
+  rotate: true
+  xy: 2, 22
+  size: 86, 71
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_02
+  rotate: false
+  xy: 2, 110
+  size: 88, 70
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_03
+  rotate: true
+  xy: 314, 513
+  size: 86, 74
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_04
+  rotate: false
+  xy: 297, 84
+  size: 85, 69
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_05
+  rotate: false
+  xy: 308, 440
+  size: 80, 71
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_06
+  rotate: true
+  xy: 177, 3
+  size: 79, 72
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_07
+  rotate: false
+  xy: 312, 10
+  size: 84, 72
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_08
+  rotate: false
+  xy: 401, 131
+  size: 85, 71
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_09
+  rotate: false
+  xy: 268, 155
+  size: 87, 71
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_7fire_10
+  rotate: true
+  xy: 75, 22
+  size: 86, 71
+  orig: 88, 79
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_Frame_red01
+  rotate: false
+  xy: 230, 937
+  size: 160, 92
+  orig: 160, 92
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_01
+  rotate: false
+  xy: 155, 494
+  size: 151, 88
+  orig: 151, 88
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_01_1
+  rotate: false
+  xy: 230, 843
+  size: 160, 92
+  orig: 160, 92
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_02
+  rotate: true
+  xy: 392, 763
+  size: 149, 96
+  orig: 150, 96
+  offset: 1, 0
+  index: -1
+Symbol_09/Syb_R_people_03
+  rotate: true
+  xy: 268, 228
+  size: 87, 106
+  orig: 87, 106
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_03_1
+  rotate: true
+  xy: 376, 204
+  size: 87, 106
+  orig: 87, 106
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_04
+  rotate: false
+  xy: 148, 2
+  size: 27, 80
+  orig: 27, 80
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_05
+  rotate: true
+  xy: 164, 673
+  size: 61, 64
+  orig: 61, 64
+  offset: 0, 0
+  index: -1
+Symbol_09/Syb_R_people_05_1
+  rotate: true
+  xy: 390, 293
+  size: 61, 89
+  orig: 61, 90
+  offset: 0, 1
+  index: -1
+Symbol_09/Syb_R_people_speed
+  rotate: false
+  xy: 158, 584
+  size: 154, 87
+  orig: 155, 87
+  offset: 1, 0
+  index: -1
