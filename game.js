@@ -1,3 +1,5 @@
+import { BottomBar } from './bottomBar.js';
+
 // 建立 PIXI Application
 const app = new PIXI.Application();
 await app.init({ 
@@ -226,201 +228,49 @@ function highlightWinningLine(lineIndex, line, winAmount) {
     }, 2000);
 }
 
-// 建立 UI 容器
-const uiContainer = new PIXI.Container();
-uiContainer.position.set(0, app.screen.height - 80); // 放在畫面底部
-app.stage.addChild(uiContainer);
+// 建立 BottomBar
+const bottomBar = new BottomBar(app, gameState, BET_CONFIG);
 
-// 新增總額顯示 (左側)
-const creditText = new PIXI.Text(`CREDIT: ${gameState.totalCredit}`, {
-    fontFamily: 'Arial',
-    fontSize: 24,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-creditText.position.set(50, 25);
-uiContainer.addChild(creditText);
-
-// 新增最後贏分顯示 (中間)
-const winText = new PIXI.Text(`WIN: ${gameState.lastWin}`, {
-    fontFamily: 'Arial',
-    fontSize: 24,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-winText.anchor.set(0.5, 0); // 設置錨點使文字水平置中
-winText.position.set(app.screen.width / 2, 25);
-uiContainer.addChild(winText);
-
-// 修改旋轉按鈕 (右側)
-const spinButton = new PIXI.Graphics();
-spinButton.beginFill(0xFF0000);
-spinButton.drawRect(0, 0, 120, 50);
-spinButton.endFill();
-spinButton.position.set(app.screen.width - 150, 15);
-spinButton.eventMode = 'static';
-spinButton.cursor = 'pointer';
-uiContainer.addChild(spinButton);
-
-// SPIN 文字
-const spinText = new PIXI.Text('SPIN', {
-    fontFamily: 'Arial',
-    fontSize: 24,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-spinText.anchor.set(0.5);
-spinText.position.set(60, 25);
-spinButton.addChild(spinText);
-
-// 建立押注控制容器 (SPIN 左側)
-const betContainer = new PIXI.Container();
-betContainer.position.set(app.screen.width - 500, 15); // 向左移動更多空間
-uiContainer.addChild(betContainer);
-
-// 建立減少押注按鈕
-const decreaseBetButton = new PIXI.Graphics();
-decreaseBetButton.beginFill(0x4CAF50);
-decreaseBetButton.drawRect(0, 0, 50, 50);
-decreaseBetButton.endFill();
-decreaseBetButton.eventMode = 'static';
-decreaseBetButton.cursor = 'pointer';
-betContainer.addChild(decreaseBetButton);
-
-// 減號符號
-const minusText = new PIXI.Text('-', {
-    fontFamily: 'Arial',
-    fontSize: 32,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-minusText.anchor.set(0.5);
-minusText.position.set(25, 25);
-decreaseBetButton.addChild(minusText);
-
-// 建立押注金額顯示文字
-const betText = new PIXI.Text(`BET: ${gameState.currentBet}`, {
-    fontFamily: 'Arial',
-    fontSize: 24,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-betText.position.set(70, 10);
-// 設定最小寬度確保文字不會溢出
-betContainer.addChild(betText);
-
-// 建立增加押注按鈕
-const increaseBetButton = new PIXI.Graphics();
-increaseBetButton.beginFill(0x4CAF50);
-increaseBetButton.drawRect(250, 0, 50, 50); // 向右移動按鈕
-increaseBetButton.endFill();
-increaseBetButton.eventMode = 'static';
-increaseBetButton.cursor = 'pointer';
-betContainer.addChild(increaseBetButton);
-
-// 加號符號
-const plusText = new PIXI.Text('+', {
-    fontFamily: 'Arial',
-    fontSize: 32,
-    fill: 0xFFFFFF,
-    align: 'center'
-});
-plusText.anchor.set(0.5);
-plusText.position.set(275, 25);
-increaseBetButton.addChild(plusText);
-
-// 更新 UI 函數
-function updateUI() {
-    creditText.text = `CREDIT: ${gameState.totalCredit}`;
-    betText.text = `BET: ${gameState.currentBet}`;
-    winText.text = `WIN: ${gameState.lastWin}`;
-}
-
-// 建立 UI 相關的函數
-function createUI() {
-    // ... 其他 UI 元素的創建程式碼保持不變 ...
-
-    // 增加押注按鈕事件
-    increaseBetButton.on('pointerdown', () => {
-        if (gameState.spinning) return;
-        if (gameState.betIndex < BET_CONFIG.levels.length - 1) {
-            gameState.betIndex++;
-            gameState.currentBet = BET_CONFIG.levels[gameState.betIndex];
-            updateUI();
-        }
-    });
-
-    // 減少押注按鈕事件
-    decreaseBetButton.on('pointerdown', () => {
-        if (gameState.spinning) return;
-        if (gameState.betIndex > 0) {
-            gameState.betIndex--;
-            gameState.currentBet = BET_CONFIG.levels[gameState.betIndex];
-            updateUI();
-        }
-    });
-
-    // 移除文字的事件監聽
-    minusText.eventMode = 'none';
-    plusText.eventMode = 'none';
-
-    // 移除文字的互動性
-    minusText.interactive = false;
-    plusText.interactive = false;
-
-    // Spin 按鈕事件
-    spinButton.on('pointerdown', () => {
-        if (gameState.spinning) return;
-        if (gameState.totalCredit < gameState.currentBet) return;
+// 設置 SPIN 按鈕事件
+bottomBar.onSpin(() => {
+    gameState.spinning = true;
+    gameState.totalCredit -= gameState.currentBet;
+    bottomBar.updateUI();
+    
+    // 為每個捲軸設定動畫
+    reels.forEach((reel, i) => {
+        const symbols = reel.children;
+        const targetY = symbols.length * SYMBOL_CONFIG.height;
         
-        gameState.spinning = true;
-        gameState.totalCredit -= gameState.currentBet;
-        updateUI();
-        
-        // 為每個捲軸設定動畫
-        reels.forEach((reel, i) => {
-            const symbols = reel.children;
-            const targetY = symbols.length * SYMBOL_CONFIG.height;
+        let currentSpeed = 0;
+        const spinAnimation = (delta) => {
+            currentSpeed = Math.min(50, currentSpeed + 1);
             
-            // 使用 PIXI 的 Ticker 來處理動畫
-            let currentSpeed = 0;
-            const spinAnimation = (delta) => {
-                currentSpeed = Math.min(50, currentSpeed + 1);
-                
-                symbols.forEach(symbol => {
-                    symbol.y += currentSpeed;
-                    if (symbol.y >= targetY) {
-                        symbol.y = -SYMBOL_CONFIG.height;
-                    }
-                });
-
-                // 停止動畫
-                if (currentSpeed >= 50) {
-                    setTimeout(() => {
-                        app.ticker.remove(spinAnimation);
-                        if (i === reels.length - 1) {
-                            // 最後一個輪軸停止時
-                            gameState.spinning = false;
-                            
-                            // 檢查中獎
-                            const winAmount = checkWin(reels);
-                            gameState.lastWin = winAmount;
-                            gameState.totalCredit += winAmount;
-                            
-                            // 更新UI顯示
-                            updateUI();
-                        }
-                    }, 1000 + i * 500);
+            symbols.forEach(symbol => {
+                symbol.y += currentSpeed;
+                if (symbol.y >= targetY) {
+                    symbol.y = -SYMBOL_CONFIG.height;
                 }
-            };
+            });
 
-            // 依序啟動每個輪軸的動畫
-            setTimeout(() => {
-                app.ticker.add(spinAnimation);
-            }, i * 200);
-        });
+            if (currentSpeed >= 50) {
+                setTimeout(() => {
+                    app.ticker.remove(spinAnimation);
+                    if (i === reels.length - 1) {
+                        gameState.spinning = false;
+                        
+                        const winAmount = checkWin(reels);
+                        gameState.lastWin = winAmount;
+                        gameState.totalCredit += winAmount;
+                        
+                        bottomBar.updateUI();
+                    }
+                }, 1000 + i * 500);
+            }
+        };
+
+        setTimeout(() => {
+            app.ticker.add(spinAnimation);
+        }, i * 200);
     });
-}
-
-// 呼叫 createUI 函數
-createUI();
+});
